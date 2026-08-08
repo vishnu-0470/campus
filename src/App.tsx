@@ -11,6 +11,10 @@ import { TestSuiteModal } from './components/TestSuiteModal';
 import { SecretsModal } from './components/SecretsModal';
 import { VoiceAssistantCompanion } from './components/VoiceAssistantCompanion';
 import { ColorblindSVGFilters } from './components/ColorblindSVGFilters';
+import { AttendanceHeatmap } from './components/AttendanceHeatmap';
+import { AdminDeskPortal } from './components/AdminDeskPortal';
+import { PlacementGuidanceWidget } from './components/PlacementGuidanceWidget';
+import { AIDoubtChatbox } from './components/AIDoubtChatbox';
 
 import {
   UserProfile,
@@ -217,6 +221,38 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
     }
   };
 
+  const handlePostAnnouncement = (title: string, message: string, priority: 'low' | 'medium' | 'high' | 'urgent') => {
+    const newAlert: CampusAlertNotification = {
+      id: `anc_${Date.now()}`,
+      title: `📢 ${title}`,
+      message,
+      type: priority === 'urgent' ? 'urgent' : 'class',
+      timestamp: 'Just now',
+      read: false
+    };
+
+    setAlerts((prev) => [newAlert, ...prev]);
+
+    fetch('/api/notifications/trigger', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: `📢 ${title}`,
+        message,
+        type: priority === 'urgent' ? 'urgent' : 'class'
+      })
+    }).catch((err) => console.log('Notice sync error:', err));
+  };
+
+  const handleUpdateStudentAttendance = (studentId: string, subjectCode: string, newPercentage: number) => {
+    if (studentId === currentUser.id || studentId === 'usr_001') {
+      setCurrentUser((prev) => ({
+        ...prev,
+        attendancePercentage: newPercentage
+      }));
+    }
+  };
+
   // Build root CSS classes for Theme & Colorblind matrix filters
   const rootThemeClass = accessibility.theme === 'dark' ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900';
   const colorblindFilterClass =
@@ -277,6 +313,36 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
           />
         </section>
 
+        {/* Weekly Attendance Heatmap (Recharts) & Read-Only Log */}
+        <section aria-label="Weekly Attendance Heatmap and Student Log">
+          <AttendanceHeatmap
+            currentUser={currentUser}
+            accessibilityTransparency={accessibility.reducedTransparency}
+            onAskAgentAboutAttendance={(query) => handleSendMessage(query)}
+          />
+        </section>
+
+        {/* TPO Placement Eligibility & Career Guidance Engine */}
+        <section aria-label="Placement Guidance and Drive Eligibility Checker">
+          <PlacementGuidanceWidget
+            currentUser={currentUser}
+            accessibilityTransparency={accessibility.reducedTransparency}
+            onAskAgentForGuidance={(query) => handleSendMessage(query)}
+          />
+        </section>
+
+        {/* Campus Admin & Faculty Control Desk */}
+        <section aria-label="Campus Admin and Faculty Dispatch Desk">
+          <AdminDeskPortal
+            currentUser={currentUser}
+            accessibilityTransparency={accessibility.reducedTransparency}
+            onPostAnnouncement={handlePostAnnouncement}
+            onUpdateStudentAttendance={handleUpdateStudentAttendance}
+            sportsSlots={slots}
+            sportsCourts={courts}
+          />
+        </section>
+
         {/* Real-time Sports Court & Turf Booking Engine */}
         <section aria-label="Sports Court and Turf Reservation Engine">
           <SportsBookingWidget
@@ -300,6 +366,10 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
           />
         </section>
       </main>
+
+      {/* Floating AI Academic Doubts Chatbox */}
+      <AIDoubtChatbox accessibilityTransparency={accessibility.reducedTransparency} />
+
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">

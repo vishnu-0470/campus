@@ -456,7 +456,7 @@ export const INSTITUTIONAL_CITATIONS: Citation[] = [
 export const INITIAL_ALERTS: CampusAlertNotification[] = [
   {
     id: 'alt_1',
-    title: '🔔 Class Reminder: Deep Learning in 10 mins',
+    title: '🔔 Class Reminder: Deep Learning in 15 mins',
     message: 'Your next class "Deep Learning & Multi-Agent AI" starts at 09:30 AM in Room IT-304 (Ramanujan Block). Attendance current: 73.5%.',
     type: 'class',
     timestamp: 'Just now',
@@ -465,20 +465,174 @@ export const INITIAL_ALERTS: CampusAlertNotification[] = [
   },
   {
     id: 'alt_2',
+    title: '📢 Admin Announcement: Condonation Application Deadline',
+    message: 'All students with attendance between 65% and 74.9% must submit medical condonation forms to HOD CSE by August 15.',
+    type: 'urgent',
+    timestamp: '10 mins ago',
+    read: false
+  },
+  {
+    id: 'alt_3',
     title: '🏸 Badminton Court Slot Available',
-    message: 'Slot 16:00 - 17:00 on Badminton Court 1 is open for booking. Reserve now with Sports Booking Agent.',
+    message: 'Slot 16:00 - 17:00 on Badminton Court 1 is open for booking. First Come First Serve AI Agent active.',
     type: 'court',
     timestamp: '15 mins ago',
     read: false,
     actionUrl: '/sports'
   },
   {
-    id: 'alt_3',
-    title: '💼 Google Placement Eligibility Verified',
-    message: 'You meet the CGPA (8.2/10) requirement for Google SDE Internship drive tomorrow. Workshop registration open.',
+    id: 'alt_4',
+    title: '💼 Google Placement Drive Registered',
+    message: 'Your CGPA (8.7/10) qualifies for Google SDE campus drive on Aug 20. Attendance check passed.',
     type: 'placement',
     timestamp: '1 hour ago',
     read: true,
     actionUrl: '/placements'
+  }
+];
+
+export const ATTENDANCE_WEEKLY_DATA = [
+  { day: 'Monday', shortDay: 'Mon', presentClasses: 5, totalClasses: 6, percentage: 83.3, status: 'good' as const },
+  { day: 'Tuesday', shortDay: 'Tue', presentClasses: 4, totalClasses: 6, percentage: 66.7, status: 'warning' as const },
+  { day: 'Wednesday', shortDay: 'Wed', presentClasses: 6, totalClasses: 6, percentage: 100.0, status: 'excellent' as const },
+  { day: 'Thursday', shortDay: 'Thu', presentClasses: 3, totalClasses: 5, percentage: 60.0, status: 'critical' as const },
+  { day: 'Friday', shortDay: 'Fri', presentClasses: 5, totalClasses: 5, percentage: 100.0, status: 'excellent' as const },
+  { day: 'Saturday', shortDay: 'Sat', presentClasses: 4, totalClasses: 4, percentage: 100.0, status: 'excellent' as const }
+];
+
+export const SUBJECT_ATTENDANCE_DATA = [
+  {
+    subjectCode: 'CS301',
+    subjectName: 'Deep Learning & Neural Networks',
+    attendedClasses: 28,
+    totalClasses: 38,
+    percentage: 73.7,
+    professor: 'Dr. K. Srinivas',
+    isCondonationRisk: true,
+    requiredClassesFor75: 2
+  },
+  {
+    subjectCode: 'CS302',
+    subjectName: 'Design & Analysis of Algorithms',
+    attendedClasses: 32,
+    totalClasses: 40,
+    percentage: 80.0,
+    professor: 'Dr. P. V. Gopal',
+    isCondonationRisk: false,
+    requiredClassesFor75: 0
+  },
+  {
+    subjectCode: 'CS303',
+    subjectName: 'Database Management Systems',
+    attendedClasses: 35,
+    totalClasses: 42,
+    percentage: 83.3,
+    professor: 'Prof. S. Laxmi',
+    isCondonationRisk: false,
+    requiredClassesFor75: 0
+  },
+  {
+    subjectCode: 'CS304',
+    subjectName: 'Operating Systems & Kernel Arch',
+    attendedClasses: 25,
+    totalClasses: 36,
+    percentage: 69.4,
+    professor: 'Mr. M. Sateesh',
+    isCondonationRisk: true,
+    requiredClassesFor75: 4
+  },
+  {
+    subjectCode: 'CS305',
+    subjectName: 'Software Engineering & Agile',
+    attendedClasses: 30,
+    totalClasses: 34,
+    percentage: 88.2,
+    professor: 'Dr. T. Adesh',
+    isCondonationRisk: false,
+    requiredClassesFor75: 0
+  }
+];
+
+export const PLACEMENT_DRIVES_DATA = [
+  {
+    id: 'plc_1',
+    companyName: 'Google Cloud Platform',
+    role: 'Software Development Engineer (SDE 1)',
+    packageLpa: 28.5,
+    minCgpa: 8.0,
+    minAttendance: 75.0,
+    allowBacklogs: false,
+    eligibleBranches: ['CSE', 'IT', 'ECE'],
+    driveDate: '2026-08-20',
+    location: 'Campus Auditorium & Virtual On-site',
+    description: 'Product engineering role in distributed systems, AI infrastructure, and microservices.',
+    userEligible: true,
+    eligibilityReason: 'CGPA 8.7 >= 8.0, Branch CSE eligible, 0 Active Backlogs. Condonation submission suggested for attendance.'
+  },
+  {
+    id: 'plc_2',
+    companyName: 'ServiceNow India',
+    role: 'Associate Platform Engineer',
+    packageLpa: 18.0,
+    minCgpa: 7.0,
+    minAttendance: 70.0,
+    allowBacklogs: false,
+    eligibleBranches: ['CSE', 'IT', 'ECE', 'EEE'],
+    driveDate: '2026-08-25',
+    location: 'Ramanujan Lab 4',
+    description: 'Enterprise workflow automation, cloud platform development, and JavaScript/React APIs.',
+    userEligible: true,
+    eligibilityReason: 'CGPA 8.7 >= 7.0, Attendance 73.5% >= 70%, 0 Backlogs. Fully Eligible!'
+  },
+  {
+    id: 'plc_3',
+    companyName: 'Microsoft Corporation',
+    role: 'Cloud & AI Engineer Intern',
+    packageLpa: 32.0,
+    minCgpa: 8.5,
+    minAttendance: 80.0,
+    allowBacklogs: false,
+    eligibleBranches: ['CSE', 'IT'],
+    driveDate: '2026-08-28',
+    location: 'Visvesvaraya Seminar Hall',
+    description: 'Generative AI models, Azure core systems, and high-performance C++ / Python compute.',
+    userEligible: false,
+    eligibilityReason: 'Attendance 73.5% is below minimum 80.0%. Submit medical condonation to unlock hall ticket.'
+  },
+  {
+    id: 'plc_4',
+    companyName: 'Deloitte USI',
+    role: 'Technology Consultant',
+    packageLpa: 11.5,
+    minCgpa: 6.5,
+    minAttendance: 65.0,
+    allowBacklogs: true,
+    eligibleBranches: ['CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'],
+    driveDate: '2026-09-02',
+    location: 'Placement Cell Building',
+    description: 'Client tech advisory, full-stack architecture, and cloud migration solutions.',
+    userEligible: true,
+    eligibilityReason: 'All criteria met. Fully Eligible!'
+  }
+];
+
+export const INITIAL_ADMIN_ANNOUNCEMENTS = [
+  {
+    id: 'anc_1',
+    title: 'Mid-Semester Examination Time Table Published',
+    message: 'The mid-semester theory examinations for 3rd Year B.Tech CSE & IT begin on August 22. Hall tickets will be issued at the Exam Cell.',
+    postedBy: 'Controller of Examinations (CoE)',
+    targetAudience: 'All 3rd Year Students',
+    priority: 'high' as const,
+    timestamp: 'August 7, 2026 - 18:30'
+  },
+  {
+    id: 'anc_2',
+    title: 'Sports Facility Maintenance Notice & Turf Slot Lock',
+    message: 'Football Turf 1 will undergo turf maintenance tomorrow from 12:00 PM to 02:00 PM. Agent auto-reallocates conflicting slots.',
+    postedBy: 'Director of Physical Education',
+    targetAudience: 'Sports & Athletic Club Members',
+    priority: 'medium' as const,
+    timestamp: 'August 7, 2026 - 15:10'
   }
 ];

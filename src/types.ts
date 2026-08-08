@@ -187,6 +187,62 @@ export interface AccessibilityAuditResult {
   }[];
 }
 
+export interface WeeklyAttendanceDay {
+  day: string;
+  shortDay: string;
+  presentClasses: number;
+  totalClasses: number;
+  percentage: number;
+  status: 'excellent' | 'good' | 'warning' | 'critical';
+}
+
+export interface SubjectAttendance {
+  subjectCode: string;
+  subjectName: string;
+  attendedClasses: number;
+  totalClasses: number;
+  percentage: number;
+  professor: string;
+  isCondonationRisk: boolean;
+  requiredClassesFor75: number;
+}
+
+export interface PlacementCompany {
+  id: string;
+  companyName: string;
+  logoUrl?: string;
+  role: string;
+  packageLpa: number;
+  minCgpa: number;
+  minAttendance: number;
+  allowBacklogs: boolean;
+  eligibleBranches: string[];
+  driveDate: string;
+  location: string;
+  description: string;
+  userEligible?: boolean;
+  eligibilityReason?: string;
+}
+
+export interface AdminAnnouncement {
+  id: string;
+  title: string;
+  message: string;
+  postedBy: string;
+  targetAudience: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  timestamp: string;
+}
+
+export interface AcademicDoubt {
+  id: string;
+  subject: string;
+  question: string;
+  answer?: string;
+  codeSnippet?: string;
+  timestamp: string;
+}
+
 export interface Message {
   id: string;
   sender: 'user' | 'assistant' | 'agent-orchestrator';

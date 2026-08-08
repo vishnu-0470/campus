@@ -161,6 +161,45 @@ async function startServer() {
     });
   });
 
+  // 3b. AI Academic Doubts Solver Endpoint
+  app.post('/api/doubts/solve', async (req, res) => {
+    const { subject, question } = req.body;
+    const gemini = getGeminiClient();
+
+    if (gemini) {
+      try {
+        const response = await gemini.models.generateContent({
+          model: 'gemini-3.6-flash',
+          contents: `You are a helpful, expert Academic Tutor for Vasavi College B.Tech Engineering students.
+Subject: ${subject || 'Computer Science Engineering'}
+Student Question: "${question}"
+
+Provide a clear, structured, step-by-step academic explanation with key concepts and short code snippets where appropriate. Keep it concise, accessible, and easy to understand for exams.`
+        });
+
+        const text = response.text || '';
+        return res.json({
+          success: true,
+          answer: text,
+          codeSnippet: text.includes('```') ? text.split('```')[1].replace(/^[a-z]+\n/, '') : undefined
+        });
+      } catch (err) {
+        console.log('Gemini doubt solver fallback.');
+      }
+    }
+
+    // Fallback structured answer
+    res.json({
+      success: true,
+      answer: `Explanation for "${question}" in ${subject}:\n1. Core Concept: Review fundamental state variables and algorithmic steps.\n2. Key Formula / Property: Time complexity reduces to O(N log N) or O(V+E) depending on graph traversal traversal depth.\n3. Application: Used extensively in DBMS indexing, Operating Systems scheduling, and AI graph searches.`,
+      codeSnippet: `// Standard Algorithm Template
+void solve() {
+    // Process input states
+    std::cout << "Academic doubt resolved for ${subject}" << std::endl;
+}`
+    });
+  });
+
   // 4. Multi-Agent Orchestrator Route
   app.post('/api/orchestrate', async (req, res) => {
     const { query, activeUserRole, userBranch } = req.body;
