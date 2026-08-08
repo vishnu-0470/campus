@@ -15,6 +15,7 @@ import { AdminDeskPortal } from './components/AdminDeskPortal';
 import { PlacementGuidanceWidget } from './components/PlacementGuidanceWidget';
 import { AIDoubtChatbox } from './components/AIDoubtChatbox';
 import { NoticeScannerCameraWidget } from './components/NoticeScannerCameraWidget';
+import { AuraMaxLandingPage } from './components/AuraMaxLandingPage';
 
 import {
   UserProfile,
@@ -103,6 +104,7 @@ export default function App() {
   const [showSecretsModal, setShowSecretsModal] = useState(false);
   const [showVoiceCompanion, setShowVoiceCompanion] = useState(false);
   const [showNotificationsDrawer, setShowNotificationsDrawer] = useState(false);
+  const [activeAppMode, setActiveAppMode] = useState<'auramax' | 'dashboard'>('auramax');
 
   // Conversation Stream
   const [messages, setMessages] = useState<Message[]>([
@@ -308,8 +310,33 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
       ? `colorblind-${accessibility.colorblindMode}`
       : '';
 
+  if (activeAppMode === 'auramax') {
+    return (
+      <div className="relative min-h-screen bg-[#050505]">
+        <AuraMaxLandingPage onSwitchToDashboard={() => setActiveAppMode('dashboard')} />
+
+        {/* Floating Switch Button to Smart Campus OS Dashboard */}
+        <button
+          onClick={() => setActiveAppMode('dashboard')}
+          className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full bg-[#18181b]/90 border border-white/20 text-white text-xs font-black shadow-2xl backdrop-blur-xl hover:border-[#2dd4bf] hover:scale-105 transition-all flex items-center gap-2 group"
+        >
+          <div className="w-2.5 h-2.5 rounded-full bg-[#2dd4bf] animate-ping" />
+          <span>CampusOS AI Dashboard</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen transition-colors duration-200 ${rootThemeClass} ${colorblindFilterClass}`}>
+      {/* Floating Switch Button back to AuraMax Landing Page */}
+      <button
+        onClick={() => setActiveAppMode('auramax')}
+        className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-full bg-slate-900/90 border border-cyan-500/40 text-cyan-300 text-xs font-black shadow-2xl backdrop-blur-xl hover:border-cyan-400 hover:scale-105 transition-all flex items-center gap-2 group"
+      >
+        <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+        <span>AuraMax Landing Page</span>
+      </button>
       {/* Root SVG Filter Definitions for Colorblind Modes */}
       <ColorblindSVGFilters />
 
