@@ -623,12 +623,15 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
 
       {showNotificationsDrawer && (
         <NotificationsDrawer
+          isOpen={showNotificationsDrawer}
           alerts={alerts}
           onClose={() => setShowNotificationsDrawer(false)}
+          onMarkAsRead={(id) => {
+            setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, read: true } : a)));
+          }}
           onMarkAllAsRead={() => {
             setAlerts((prev) => prev.map((a) => ({ ...a, read: true })));
           }}
-          onClearAll={() => setAlerts([])}
         />
       )}
 
