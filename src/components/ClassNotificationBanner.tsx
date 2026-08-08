@@ -92,7 +92,41 @@ export const ClassNotificationBanner: React.FC<ClassNotificationBannerProps> = (
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4 space-y-3">
+      {/* Top Pop-Up Notification Toast Bar for Latest Circulars & Updates */}
+      {alerts && alerts.length > 0 && alerts[0] && !alerts[0].read && (
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-950/90 via-purple-950/90 to-slate-900 border border-indigo-500/40 text-white shadow-xl flex items-center justify-between gap-3 animate-bounce-short">
+          <div className="flex items-center gap-3">
+            <span className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
+              <Radio className="w-4 h-4 animate-pulse text-indigo-400" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                  NEW CAMPUS BROADCAST
+                </span>
+                <span className="text-[10px] text-slate-400">{alerts[0].timestamp}</span>
+              </div>
+              <h4 className="text-xs sm:text-sm font-black text-white mt-0.5">
+                {alerts[0].title}
+              </h4>
+              <p className="text-xs text-slate-300 line-clamp-1 mt-0.5">
+                {alerts[0].message}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => onAskAgentAboutClass(alerts[0].title)}
+              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md"
+            >
+              Details
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
         className={`${panelClass} rounded-2xl p-4 sm:p-5 border-l-4 border-l-emerald-500 shadow-lg relative overflow-hidden transition-all`}
         role="region"

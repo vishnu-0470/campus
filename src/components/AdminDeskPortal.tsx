@@ -35,34 +35,38 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
   sportsSlots,
   sportsCourts
 }) => {
-  const [activeTab, setActiveTab] = useState<'announcements' | 'attendance' | 'sports_approvals'>('announcements');
+  const [activeTab, setActiveTab] = useState<'circulars' | 'attendance' | 'sports_approvals'>('circulars');
 
-  // Announcement Form State
+  // Circular / Announcement Form State
   const [annTitle, setAnnTitle] = useState('');
+  const [annRefNo, setAnnRefNo] = useState('VCE/CIRCULAR/2026/042');
+  const [annCategory, setAnnCategory] = useState('Exams & Schedule');
   const [annMessage, setAnnMessage] = useState('');
-  const [annPriority, setAnnPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('high');
-  const [annTarget, setAnnTarget] = useState('All B.Tech Students');
+  const [annPriority, setAnnPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('urgent');
+  const [annTarget, setAnnTarget] = useState('All Students & Faculty');
   const [annSuccessMsg, setAnnSuccessMsg] = useState('');
 
   // Attendance Form State
   const [selectedStudent, setSelectedStudent] = useState('usr_001'); // Rahul Sharma
   const [selectedSubject, setSelectedSubject] = useState('CS301');
-  const [newAttendanceValue, setNewAttendanceValue] = useState('78');
+  const [newAttendanceValue, setNewAttendanceValue] = useState('82');
+  const [attRemarks, setAttRemarks] = useState('Practical & Theory Register Updated by Faculty');
   const [attSuccessMsg, setAttSuccessMsg] = useState('');
 
   const panelClass = accessibilityTransparency ? 'solid-panel' : 'glass-panel';
   const isAdminOrFaculty = currentUser.role === 'admin' || currentUser.role === 'faculty';
 
-  const handlePublishAnnouncement = (e: React.FormEvent) => {
+  const handlePublishCircular = (e: React.FormEvent) => {
     e.preventDefault();
     if (!annTitle.trim() || !annMessage.trim()) return;
 
-    onPostAnnouncement(annTitle, annMessage, annPriority);
-    setAnnSuccessMsg(`Announcement "${annTitle}" successfully broadcasted to student desks!`);
+    const fullNotice = `[Ref: ${annRefNo}] [Category: ${annCategory}] Target: ${annTarget}\n\n${annMessage}`;
+    onPostAnnouncement(`OFFICIAL CIRCULAR: ${annTitle}`, fullNotice, annPriority);
+    setAnnSuccessMsg(`Official Circular "${annTitle}" (${annRefNo}) published! Visible on student top notification bar and circular board.`);
     setAnnTitle('');
     setAnnMessage('');
 
-    setTimeout(() => setAnnSuccessMsg(''), 4000);
+    setTimeout(() => setAnnSuccessMsg(''), 5000);
   };
 
   const handleSaveAttendance = (e: React.FormEvent) => {
@@ -71,9 +75,17 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
     if (isNaN(parsed) || parsed < 0 || parsed > 100) return;
 
     onUpdateStudentAttendance(selectedStudent, selectedSubject, parsed);
-    setAttSuccessMsg(`Attendance for Student (${selectedStudent}) updated to ${parsed}% officially!`);
 
-    setTimeout(() => setAttSuccessMsg(''), 4000);
+    // Also dispatch top pop-up notification about attendance update
+    const studentLabel = selectedStudent === 'usr_001' ? 'Rahul Sharma (1602-23-733-042)' : 'Ananya Rao (1602-24-735-018)';
+    onPostAnnouncement(
+      `Attendance Update: ${selectedSubject}`,
+      `Faculty posted updated official register for ${studentLabel}: ${parsed}% (${attRemarks}).`,
+      parsed < 75 ? 'urgent' : 'high'
+    );
+
+    setAttSuccessMsg(`Attendance for ${studentLabel} updated to ${parsed}% in official ERP register and broadcasted!`);
+    setTimeout(() => setAttSuccessMsg(''), 5000);
   };
 
   return (
@@ -107,28 +119,28 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
         {/* Tab Selection */}
         <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs">
           <button
-            onClick={() => setActiveTab('announcements')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'announcements'
+            onClick={() => setActiveTab('circulars')}
+            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'circulars'
                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <Megaphone className="w-3.5 h-3.5 text-indigo-500" /> Announcements
+            <Megaphone className="w-3.5 h-3.5 text-indigo-500" /> Post Circular & Notice
           </button>
           <button
             onClick={() => setActiveTab('attendance')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'attendance'
                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <UserCheck className="w-3.5 h-3.5 text-emerald-500" /> Post Attendance
+            <UserCheck className="w-3.5 h-3.5 text-emerald-500" /> Post Attendance Register
           </button>
           <button
             onClick={() => setActiveTab('sports_approvals')}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'sports_approvals'
                 ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -151,8 +163,8 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
         </div>
       )}
 
-      {/* Content Tab 1: Broadcast Announcements */}
-      {activeTab === 'announcements' && (
+      {/* Content Tab 1: Broadcast Official Circulars & Notices */}
+      {activeTab === 'circulars' && (
         <div className="space-y-5">
           {annSuccessMsg && (
             <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2 animate-in fade-in">
@@ -161,26 +173,59 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
             </div>
           )}
 
-          <form onSubmit={handlePublishAnnouncement} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-4">
+          <form onSubmit={handlePublishCircular} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-4">
             <h4 className="text-sm font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Radio className="w-4 h-4 text-indigo-500 animate-pulse" /> Dispatch Real-Time Alert to Student Desk
+              <Radio className="w-4 h-4 text-indigo-500 animate-pulse" /> Post Official Circular / Important Notice
             </h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                  Announcement Title
+                  Circular Title
                 </label>
                 <input
                   type="text"
                   value={annTitle}
                   onChange={(e) => setAnnTitle(e.target.value)}
-                  placeholder="e.g. Mid-Sem Time Table / Condonation Application Open"
+                  placeholder="e.g. End-Semester Examination Schedule & Rules"
                   className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
 
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                  Reference Order No.
+                </label>
+                <input
+                  type="text"
+                  value={annRefNo}
+                  onChange={(e) => setAnnRefNo(e.target.value)}
+                  placeholder="e.g. VCE/COE/2026/104"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                  Category
+                </label>
+                <select
+                  value={annCategory}
+                  onChange={(e) => setAnnCategory(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="Exams & Schedule">Exams & Schedule</option>
+                  <option value="Attendance & Condonation">Attendance & Condonation</option>
+                  <option value="Placements & Recruitment">Placements & Recruitment</option>
+                  <option value="Hostel & Facilities">Hostel & Facilities</option>
+                  <option value="General College Notice">General College Notice</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
                   Target Audience
@@ -190,49 +235,49 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
                   onChange={(e) => setAnnTarget(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="All B.Tech Students">All B.Tech Students</option>
-                  <option value="3rd Year CSE Students">3rd Year CSE Students</option>
+                  <option value="All Students & Faculty">All Students & Faculty</option>
+                  <option value="All B.Tech 3rd Year Students">All B.Tech 3rd Year Students</option>
+                  <option value="CSE & ECE Departments">CSE & ECE Departments</option>
                   <option value="Hostel Residents">Hostel Residents</option>
-                  <option value="Placement Eligible Candidates">Placement Eligible Candidates</option>
                 </select>
               </div>
-            </div>
 
-            <div>
-              <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                Priority & Banner Type
-              </label>
-              <div className="flex items-center gap-2">
-                {(['low', 'medium', 'high', 'urgent'] as const).map((p) => (
-                  <button
-                    type="button"
-                    key={p}
-                    onClick={() => setAnnPriority(p)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all ${
-                      annPriority === p
-                        ? p === 'urgent'
-                          ? 'bg-rose-500 text-white shadow-md'
-                          : p === 'high'
-                          ? 'bg-amber-500 text-white shadow-md'
-                          : 'bg-indigo-600 text-white shadow-md'
-                        : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                  Priority / Banner Level
+                </label>
+                <div className="flex items-center gap-2">
+                  {(['low', 'medium', 'high', 'urgent'] as const).map((p) => (
+                    <button
+                      type="button"
+                      key={p}
+                      onClick={() => setAnnPriority(p)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all ${
+                        annPriority === p
+                          ? p === 'urgent'
+                            ? 'bg-rose-500 text-white shadow-md'
+                            : p === 'high'
+                            ? 'bg-amber-500 text-white shadow-md'
+                            : 'bg-indigo-600 text-white shadow-md'
+                          : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
             <div>
               <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                Detailed Message Content
+                Full Circular Content / Official Directives
               </label>
               <textarea
                 rows={3}
                 value={annMessage}
                 onChange={(e) => setAnnMessage(e.target.value)}
-                placeholder="Write full notice details regarding dates, hall tickets, or circular guidelines..."
+                placeholder="Enter complete circular text including rules, key dates, venues, or instructions..."
                 className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 required
               />
@@ -243,14 +288,14 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
                 type="submit"
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg transition-all"
               >
-                <Send className="w-4 h-4" /> Broadcast to Student Desks
+                <Send className="w-4 h-4" /> Publish Circular to Top Notification Stream
               </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* Content Tab 2: Post Attendance Logs */}
+      {/* Content Tab 2: Post Official Attendance Logs */}
       {activeTab === 'attendance' && (
         <div className="space-y-4">
           {attSuccessMsg && (
@@ -262,13 +307,13 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
 
           <form onSubmit={handleSaveAttendance} className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-4">
             <h4 className="text-sm font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-emerald-500" /> Update Official Attendance Register
+              <UserCheck className="w-4 h-4 text-emerald-500" /> Post Official Student Attendance Register
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                  Select Student
+                  Select Student / Batch
                 </label>
                 <select
                   value={selectedStudent}
@@ -282,7 +327,7 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
 
               <div>
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
-                  Course Subject
+                  Course Subject Code
                 </label>
                 <select
                   value={selectedSubject}
@@ -311,13 +356,26 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
               </div>
             </div>
 
+            <div>
+              <label className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-1">
+                Faculty Remarks / Log Note
+              </label>
+              <input
+                type="text"
+                value={attRemarks}
+                onChange={(e) => setAttRemarks(e.target.value)}
+                placeholder="e.g. Lab 4 sessions included. Medical leave approved."
+                className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
             <div className="p-3 rounded-xl bg-slate-200/60 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between">
-              <span>Official ERP Lock: Updates reflect immediately in student read-only view.</span>
+              <span>Official ERP Lock: Updates reflect immediately in student read-only view and top notification bar.</span>
               <button
                 type="submit"
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-all"
               >
-                Save Official Register
+                Post Official Attendance Register
               </button>
             </div>
           </form>

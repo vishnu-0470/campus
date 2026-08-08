@@ -55,12 +55,9 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-black tracking-tight text-white uppercase">
-                Campus<span className="text-[#2dd4bf]">OS v2</span>
+              <h1 className="text-lg font-black tracking-tight text-white uppercase">
+                Campus<span className="text-[#2dd4bf]">OS</span>
               </h1>
-              <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-[#2dd4bf]/10 text-[#2dd4bf] border border-[#2dd4bf]/20">
-                AgentX '26
-              </span>
             </div>
             <p className="text-[11px] text-[#9ca3af] hidden sm:block">
               Vasavi College of Engineering • Multi-Agent AI System
