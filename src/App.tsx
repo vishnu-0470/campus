@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Header } from './components/Header';
 import { PremiumAudioHeader } from './components/PremiumAudioHeader';
 import { ClassNotificationBanner } from './components/ClassNotificationBanner';
@@ -337,29 +338,48 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
       />
 
       {/* Real-time Class Notification Alert Banner */}
-      <ClassNotificationBanner
-        nextClass={nextClass}
-        alerts={alerts}
-        onTriggerAlert={handleTriggerAlert}
-        onAskAgentAboutClass={(courseCode) =>
-          handleSendMessage(`Where is my next class for ${courseCode} and what is my attendance eligibility?`)
-        }
-        accessibilityTransparency={accessibility.reducedTransparency}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <ClassNotificationBanner
+          nextClass={nextClass}
+          alerts={alerts}
+          onTriggerAlert={handleTriggerAlert}
+          onAskAgentAboutClass={(courseCode) =>
+            handleSendMessage(`Where is my next class for ${courseCode} and what is my attendance eligibility?`)
+          }
+          accessibilityTransparency={accessibility.reducedTransparency}
+        />
+      </motion.div>
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
         {/* Premium Audio Studio & Soundscape Header */}
-        <section aria-label="CampusOS Hi-Fi Audio Studio Bar">
+        <motion.section
+          aria-label="CampusOS Hi-Fi Audio Studio Bar"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <PremiumAudioHeader
             activeVoiceMode={showVoiceCompanion}
             onToggleVoiceMode={() => setShowVoiceCompanion(!showVoiceCompanion)}
             accessibilityTransparency={accessibility.reducedTransparency}
           />
-        </section>
+        </motion.section>
 
         {/* Agent Conversational & Execution Surface */}
-        <section aria-label="Multi-Agent Conversational AI Studio">
+        <motion.section
+          aria-label="Multi-Agent Conversational AI Studio"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <AgentOrchestrator
             messages={messages}
             onSendMessage={handleSendMessage}
@@ -368,38 +388,62 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
             currentUser={currentUser}
             accessibilityTransparency={accessibility.reducedTransparency}
           />
-        </section>
+        </motion.section>
 
         {/* Weekly Attendance Heatmap (Recharts) & Read-Only Log */}
-        <section aria-label="Weekly Attendance Heatmap and Student Log">
+        <motion.section
+          aria-label="Weekly Attendance Heatmap and Student Log"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <AttendanceHeatmap
             currentUser={currentUser}
             accessibilityTransparency={accessibility.reducedTransparency}
             onAskAgentAboutAttendance={(query) => handleSendMessage(query)}
           />
-        </section>
+        </motion.section>
 
         {/* Notice & Circular AI Camera OCR Scanner */}
-        <section aria-label="Notice and Circular Camera Scanner">
+        <motion.section
+          aria-label="Notice and Circular Camera Scanner"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <NoticeScannerCameraWidget
             accessibilityTransparency={accessibility.reducedTransparency}
             onAddCalendarEvent={handleAddCalendarEvent}
             onAddAlertStream={(title, message, priority) => handlePostAnnouncement(title, message, priority)}
             calendarEvents={calendarEvents}
           />
-        </section>
+        </motion.section>
 
         {/* TPO Placement Eligibility & Career Guidance Engine */}
-        <section aria-label="Placement Guidance and Drive Eligibility Checker">
+        <motion.section
+          aria-label="Placement Guidance and Drive Eligibility Checker"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <PlacementGuidanceWidget
             currentUser={currentUser}
             accessibilityTransparency={accessibility.reducedTransparency}
             onAskAgentForGuidance={(query) => handleSendMessage(query)}
           />
-        </section>
+        </motion.section>
 
         {/* Campus Admin & Faculty Control Desk */}
-        <section aria-label="Campus Admin and Faculty Dispatch Desk">
+        <motion.section
+          aria-label="Campus Admin and Faculty Dispatch Desk"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <AdminDeskPortal
             currentUser={currentUser}
             accessibilityTransparency={accessibility.reducedTransparency}
@@ -408,10 +452,16 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
             sportsSlots={slots}
             sportsCourts={courts}
           />
-        </section>
+        </motion.section>
 
         {/* Real-time Sports Court & Turf Booking Engine */}
-        <section aria-label="Sports Court and Turf Reservation Engine">
+        <motion.section
+          aria-label="Sports Court and Turf Reservation Engine"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <SportsBookingWidget
             courts={courts}
             slots={slots}
@@ -423,15 +473,21 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
               handleSendMessage(`Book a slot for ${courtName} at ${slotTime} today.`)
             }
           />
-        </section>
+        </motion.section>
 
         {/* Campus Directory: Faculty, Admin Task Map, Labs & Clubs */}
-        <section aria-label="Faculty Directory and Campus Navigator">
+        <motion.section
+          aria-label="Faculty Directory and Campus Navigator"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <FacultyAndAdminDirectory
             accessibilityTransparency={accessibility.reducedTransparency}
             onAskAgentAboutContact={(query) => handleSendMessage(query)}
           />
-        </section>
+        </motion.section>
       </main>
 
       {/* Floating AI Academic Doubts Chatbox */}
@@ -439,14 +495,20 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
 
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+      <motion.footer
+        initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="border-t border-white/10 py-8 text-center text-xs text-[#9ca3af] bg-[#050505]"
+      >
         <p>
-          <strong>CampusOS v2</strong> — Built by Team Akul, Vasavi College of Engineering for AgentX National Hackathon 2026.
+          <strong className="text-white">CampusOS v2</strong> — Built by Team Akul, Vasavi College of Engineering for AgentX National Hackathon 2026.
         </p>
         <p className="mt-1">
           WCAG 2.1 AA Inclusive Design • Real-time Multi-Agent Architecture • Generative UI
         </p>
-      </footer>
+      </motion.footer>
 
       {/* Modals */}
       {showAccessibilityPanel && (
