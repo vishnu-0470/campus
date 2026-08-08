@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profiles",
+      "description": "Registered campus user profiles",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "branch": { "type": "string" },
+        "rollNo": { "type": "string" },
+        "attendancePercentage": { "type": "number" }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "sports_bookings": {
+      "title": "Sports Court Bookings",
+      "description": "Real-time court and turf reservations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "courtId": { "type": "string" },
+        "courtName": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "bookedByUid": { "type": "string" },
+        "bookedByName": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "courtId", "timeSlot", "bookedByUid"]
+    },
+    "notifications": {
+      "title": "Campus Notifications",
+      "description": "User campus notifications and proactive alerts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["id", "title", "message"]
+    }
+  }
+}

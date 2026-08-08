@@ -1,0 +1,199 @@
+export type UserRole = 'student' | 'faculty' | 'admin';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  branch: string; // e.g. 'CSE', 'ECE', 'IT'
+  year: string; // e.g. '3rd Year', '2nd Year'
+  rollNo: string;
+  attendancePercentage: number;
+  hosteler: boolean;
+  interests: string[];
+}
+
+export interface ClassSession {
+  id: string;
+  courseCode: string;
+  courseName: string;
+  facultyName: string;
+  facultyEmail: string;
+  room: string;
+  building: string;
+  startTime: string; // e.g. '09:30 AM'
+  endTime: string; // e.g. '10:30 AM'
+  dayOfWeek: string;
+  isNext: boolean;
+  minutesRemaining?: number;
+  status: 'upcoming' | 'ongoing' | 'completed' | 'rescheduled';
+  buildingDirections?: BuildingDirections;
+}
+
+export interface RouteStep {
+  stepNumber: number;
+  instruction: string;
+  distanceMeter: number;
+  landmark: string;
+}
+
+export interface BuildingDirections {
+  buildingName: string;
+  roomNumber: string;
+  floorLevel: string;
+  totalDistanceMeters: number;
+  estimatedWalkMinutes: number;
+  startPoint: string;
+  routeSteps: RouteStep[];
+  accessibilityRoute: string; // Elevator / Ramp details
+  mapCoordinates: { x: number; y: number }; // Percentage for schematic campus map placement
+}
+
+export type CourtType = 'Badminton' | 'Basketball' | 'Tennis' | 'Football Turf';
+
+export interface SportsCourt {
+  id: string;
+  name: string;
+  type: CourtType;
+  location: string;
+  maxCapacity: number;
+}
+
+export interface TimeSlot {
+  id: string;
+  courtId: string;
+  startTime: string; // e.g. '16:00'
+  endTime: string; // e.g. '17:00'
+  status: 'available' | 'booked' | 'maintenance' | 'reserved';
+  bookedBy?: string;
+  bookedByRoll?: string;
+  bookingTime?: string;
+}
+
+export interface AgentStep {
+  agentName: string;
+  action: string;
+  thought: string;
+  toolUsed?: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  result?: any;
+  explanation?: string;
+}
+
+export interface ExecutionPlan {
+  id: string;
+  query: string;
+  orchestratorReasoning: string;
+  steps: AgentStep[];
+  citations?: Citation[];
+  requiresApproval?: boolean;
+  approvalAction?: PendingApproval;
+}
+
+export interface Citation {
+  documentTitle: string;
+  clause: string;
+  snippet: string;
+  relevanceScore: number;
+}
+
+export interface PendingApproval {
+  id: string;
+  type: 'BOOK_COURT' | 'SEND_EMAIL' | 'REGISTER_WORKSHOP' | 'SCHEDULE_CALENDAR' | 'SUBMIT_GRIEVANCE';
+  title: string;
+  description: string;
+  details: Record<string, any>;
+  riskLevel: 'low' | 'medium' | 'high';
+  approved?: boolean;
+  rejected?: boolean;
+}
+
+export interface FacultyEntry {
+  id: string;
+  name: string;
+  designation: string;
+  department: string;
+  room: string;
+  officeHours: string;
+  contactEmail: string;
+  phoneExt: string;
+  responsibilities: string[]; // e.g. ['Attendance Condonation', 'Lab Approvals']
+}
+
+export interface AdminTaskMap {
+  id: string;
+  taskName: string;
+  officeWindow: string;
+  responsiblePerson: string;
+  requiredDocuments: string[];
+  estimatedProcessingTime: string;
+  instructions: string;
+}
+
+export interface ClubRegistry {
+  id: string;
+  name: string;
+  category: string;
+  advisorName: string;
+  joiningFee: string;
+  eligibility: string;
+  registrationLink: string;
+  description: string;
+}
+
+export interface LabResource {
+  id: string;
+  labName: string;
+  department: string;
+  location: string;
+  equipment: string[];
+  projectSupportTags: string[]; // e.g. ['3D Printing', 'PCB Testing', 'AI Compute']
+  labInCharge: string;
+  accessProcedure: string;
+}
+
+export interface CampusAlertNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'class' | 'court' | 'placement' | 'exam' | 'urgent';
+  timestamp: string;
+  read: boolean;
+  actionUrl?: string;
+}
+
+export type ColorblindMode = 'normal' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'highcontrast';
+
+export interface AccessibilityConfig {
+  theme: 'light' | 'dark';
+  colorblindMode: ColorblindMode;
+  reducedMotion: boolean;
+  reducedTransparency: boolean;
+  highContrastText: boolean;
+  screenReaderEnabled: boolean;
+  speechRate: number;
+}
+
+export interface AccessibilityAuditResult {
+  passedCount: number;
+  warningCount: number;
+  failedCount: number;
+  scorePercentage: number;
+  audits: {
+    rule: string;
+    description: string;
+    status: 'pass' | 'warn' | 'fail';
+    elementTarget?: string;
+  }[];
+}
+
+export interface Message {
+  id: string;
+  sender: 'user' | 'assistant' | 'agent-orchestrator';
+  text: string;
+  timestamp: string;
+  plan?: ExecutionPlan;
+  citations?: Citation[];
+  approval?: PendingApproval;
+  audioUrl?: string;
+}

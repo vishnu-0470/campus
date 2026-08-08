@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Glassmorphism utility classes */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .dark .glass-panel {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  /* Solid Fallback for reduced transparency mode */
+  .solid-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .solid-panel {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Neumorphism control styles */
+  .neu-button {
+    background: #f1f5f9;
+    box-shadow: 5px 5px 10px #cbd5e1, -5px -5px 10px #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .neu-button:active {
+    box-shadow: inset 3px 3px 6px #cbd5e1, inset -3px -3px 6px #ffffff;
+  }
+
+  .dark .neu-button {
+    background: #1e293b;
+    box-shadow: 4px 4px 8px #0f172a, -4px -4px 8px #334155;
+  }
+
+  .dark .neu-button:active {
+    box-shadow: inset 3px 3px 6px #0f172a, inset -3px -3px 6px #334155;
+  }
+
+  /* Custom high-contrast focus rings */
+  *:focus-visible {
+    outline: 2px solid #10b981 !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Colorblind Filters applied at root level */
+  .colorblind-protanopia {
+    filter: url('#protanopia-filter');
+  }
+
+  .colorblind-deuteranopia {
+    filter: url('#deuteranopia-filter');
+  }
+
+  .colorblind-tritanopia {
+    filter: url('#tritanopia-filter');
+  }
+
+  .colorblind-highcontrast {
+    filter: contrast(140%) grayscale(20%);
+  }
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
