@@ -1,6 +1,6 @@
 {
   "name": "CampusOS v2 — Smart Campus AI System",
   "description": "Smart Campus Multi-Agent AI System with real-time class notifications, sports court booking, faculty directory, accessibility auditing, and multi-agent reasoning.",
-  "requestFramePermissions": ["microphone"],
+  "requestFramePermissions": ["microphone", "camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

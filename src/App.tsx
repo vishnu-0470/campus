@@ -15,6 +15,7 @@ import { AttendanceHeatmap } from './components/AttendanceHeatmap';
 import { AdminDeskPortal } from './components/AdminDeskPortal';
 import { PlacementGuidanceWidget } from './components/PlacementGuidanceWidget';
 import { AIDoubtChatbox } from './components/AIDoubtChatbox';
+import { NoticeScannerCameraWidget } from './components/NoticeScannerCameraWidget';
 
 import {
   UserProfile,
@@ -23,7 +24,8 @@ import {
   SportsCourt,
   TimeSlot,
   CampusAlertNotification,
-  AccessibilityConfig
+  AccessibilityConfig,
+  PersonalCalendarEvent
 } from './types';
 
 import {
@@ -41,6 +43,30 @@ export default function App() {
   const [courts, setCourts] = useState<SportsCourt[]>(SPORTS_COURTS);
   const [slots, setSlots] = useState<TimeSlot[]>(INITIAL_SLOTS);
   const [hasGeminiKey, setHasGeminiKey] = useState<boolean>(false);
+  const [calendarEvents, setCalendarEvents] = useState<PersonalCalendarEvent[]>([
+    {
+      id: 'cal_1',
+      title: 'Deep Learning Mid-Sem Theory Exam',
+      date: '2026-08-22',
+      time: '10:00 AM',
+      location: 'Ramanujan IT-304',
+      category: 'exam',
+      requirements: 'Hall ticket mandatory',
+      sourceNoticeTitle: 'Official CoE Exam Schedule',
+      addedAt: 'Yesterday'
+    },
+    {
+      id: 'cal_2',
+      title: 'Condonation Form Submission Deadline',
+      date: '2026-08-15',
+      time: '05:00 PM',
+      location: 'HOD CSE Office',
+      category: 'submission',
+      requirements: 'Medical certificate & Rs 500 fee receipt',
+      sourceNoticeTitle: 'HOD CSE Circular',
+      addedAt: 'Today'
+    }
+  ]);
 
   // Accessibility State
   const [accessibility, setAccessibility] = useState<AccessibilityConfig>({
@@ -253,6 +279,10 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
     }
   };
 
+  const handleAddCalendarEvent = (newEvent: PersonalCalendarEvent) => {
+    setCalendarEvents((prev) => [newEvent, ...prev]);
+  };
+
   // Build root CSS classes for Theme & Colorblind matrix filters
   const rootThemeClass = accessibility.theme === 'dark' ? 'dark bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900';
   const colorblindFilterClass =
@@ -319,6 +349,16 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
             currentUser={currentUser}
             accessibilityTransparency={accessibility.reducedTransparency}
             onAskAgentAboutAttendance={(query) => handleSendMessage(query)}
+          />
+        </section>
+
+        {/* Notice & Circular AI Camera OCR Scanner */}
+        <section aria-label="Notice and Circular Camera Scanner">
+          <NoticeScannerCameraWidget
+            accessibilityTransparency={accessibility.reducedTransparency}
+            onAddCalendarEvent={handleAddCalendarEvent}
+            onAddAlertStream={(title, message, priority) => handlePostAnnouncement(title, message, priority)}
+            calendarEvents={calendarEvents}
           />
         </section>
 

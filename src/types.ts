@@ -243,6 +243,36 @@ export interface AcademicDoubt {
   timestamp: string;
 }
 
+export interface PersonalCalendarEvent {
+  id: string;
+  title: string;
+  date: string;
+  time?: string;
+  location?: string;
+  category: 'exam' | 'submission' | 'fee' | 'event' | 'circular';
+  requirements?: string;
+  sourceNoticeTitle?: string;
+  addedAt: string;
+}
+
+export interface ExtractedNoticeData {
+  title: string;
+  category: string;
+  summary: string;
+  events: {
+    title: string;
+    date: string;
+    time?: string;
+    location?: string;
+    details?: string;
+  }[];
+  alerts: {
+    title: string;
+    message: string;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+  }[];
+}
+
 export interface Message {
   id: string;
   sender: 'user' | 'assistant' | 'agent-orchestrator';
