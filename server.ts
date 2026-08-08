@@ -82,7 +82,7 @@ async function startServer() {
     const { title, message, type, actionUrl, attachment } = req.body;
     const newAlert = {
       id: `alt_${Date.now()}`,
-      title: title || '⚡ CampusOS Alert',
+      title: title || '⚡ Synapse Alert',
       message: message || 'Important campus update received.',
       type: type || 'urgent',
       timestamp: 'Just now',
