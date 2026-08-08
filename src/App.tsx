@@ -70,6 +70,9 @@ export default function App() {
     }
   ]);
 
+  // Offline Mode State
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+
   // Accessibility State with localStorage persistence
   const [accessibility, setAccessibility] = useState<AccessibilityConfig>(() => {
     try {
@@ -337,7 +340,27 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
         unreadAlertsCount={alerts.filter((a) => !a.read).length}
         onOpenNotifications={() => setShowNotificationsDrawer(!showNotificationsDrawer)}
         hasGeminiKey={hasGeminiKey}
+        isOfflineMode={isOfflineMode}
+        onToggleOfflineMode={() => setIsOfflineMode(!isOfflineMode)}
       />
+
+      {/* Offline-First PWA Campus Wi-Fi Banner */}
+      {isOfflineMode && (
+        <div className="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between gap-2 shadow-md">
+          <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping" />
+              ⚡ Offline-First PWA Active: Serving Cached Timetables, Syllabus, PDF Notices, & Digital QR Passes from Local Cache (Zero Wi-Fi Required).
+            </span>
+            <button
+              onClick={() => setIsOfflineMode(false)}
+              className="px-2 py-0.5 rounded bg-slate-950 text-amber-300 text-[10px] uppercase font-black shrink-0 hover:bg-slate-900"
+            >
+              Go Online
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Real-time Class Notification Alert Banner */}
       <motion.div
@@ -502,6 +525,7 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
           <FacultyAndAdminDirectory
             accessibilityTransparency={accessibility.reducedTransparency}
             onAskAgentAboutContact={(query) => handleSendMessage(query)}
+            onPostAnnouncement={handlePostAnnouncement}
           />
         </motion.section>
       </main>

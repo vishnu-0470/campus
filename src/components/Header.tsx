@@ -9,7 +9,9 @@ import {
   PlayCircle,
   Bell,
   UserCheck,
-  Volume2
+  Volume2,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { UserProfile, AccessibilityConfig } from '../types';
 import { DEMO_USERS } from '../data/campusData';
@@ -26,6 +28,8 @@ interface HeaderProps {
   unreadAlertsCount: number;
   onOpenNotifications: () => void;
   hasGeminiKey: boolean;
+  isOfflineMode?: boolean;
+  onToggleOfflineMode?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -39,7 +43,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSecrets,
   unreadAlertsCount,
   onOpenNotifications,
-  hasGeminiKey
+  hasGeminiKey,
+  isOfflineMode,
+  onToggleOfflineMode
 }) => {
   const panelClass = accessibility.reducedTransparency
     ? 'solid-panel'
@@ -87,6 +93,29 @@ export const Header: React.FC<HeaderProps> = ({
               ))}
             </select>
           </div>
+
+          {/* Offline-First Mode Indicator / Toggle */}
+          <button
+            onClick={onToggleOfflineMode}
+            className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all border ${
+              isOfflineMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 animate-pulse'
+                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+            }`}
+            title="Toggle Offline-First PWA Mode (Simulate Patchy Campus Wi-Fi)"
+          >
+            {isOfflineMode ? (
+              <>
+                <WifiOff className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Offline PWA</span>
+              </>
+            ) : (
+              <>
+                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">PWA Ready</span>
+              </>
+            )}
+          </button>
 
           {/* Real-time Notification Trigger / Alert Bell */}
           <button

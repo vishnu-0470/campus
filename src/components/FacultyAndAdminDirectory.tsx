@@ -10,7 +10,13 @@ import {
   Clock,
   Mail,
   Phone,
-  Sparkles
+  Sparkles,
+  UserX,
+  UserCheck,
+  Zap,
+  Send,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import {
   FACULTY_DIRECTORY,
@@ -22,16 +28,36 @@ import {
 interface FacultyAndAdminDirectoryProps {
   accessibilityTransparency: boolean;
   onAskAgentAboutContact: (queryText: string) => void;
+  onPostAnnouncement?: (title: string, message: string, priority: 'low' | 'medium' | 'high' | 'urgent') => void;
 }
 
 export const FacultyAndAdminDirectory: React.FC<FacultyAndAdminDirectoryProps> = ({
   accessibilityTransparency,
-  onAskAgentAboutContact
+  onAskAgentAboutContact,
+  onPostAnnouncement
 }) => {
-  const [activeTab, setActiveTab] = useState<'faculty' | 'admin' | 'labs' | 'clubs'>('faculty');
+  const [activeTab, setActiveTab] = useState<'faculty' | 'absence_engine' | 'admin' | 'labs' | 'clubs'>('faculty');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Faculty Absence State
+  const [absentFaculty, setAbsentFaculty] = useState<string>('usr_fac_01'); // Dr. V. Srinivas
+  const [absentSubject, setAbsentSubject] = useState<string>('Deep Learning & Neural Networks (CS301)');
+  const [absentSlot, setAbsentSlot] = useState<string>('11:15 AM - 12:15 PM');
+  const [dispatchedSuccess, setDispatchedSuccess] = useState<string | null>(null);
+
   const panelClass = accessibilityTransparency ? 'solid-panel' : 'glass-panel';
+
+  const handleDispatchSubstitute = (substituteName: string, dept: string) => {
+    const title = `FACULTY SUBSTITUTE NOTICE: ${absentSubject}`;
+    const msg = `Attention CSE 3rd Year Students: Dr. V. Srinivas is unavailable for the ${absentSlot} lecture. ${substituteName} (${dept}) has been assigned by AI Agent as substitute faculty in Room 302. Attendance will be recorded as normal.`;
+    
+    if (onPostAnnouncement) {
+      onPostAnnouncement(title, msg, 'high');
+    }
+
+    setDispatchedSuccess(`Substitute ${substituteName} successfully dispatched for ${absentSlot}! Student timetable & top notification stream updated in 1 click.`);
+    setTimeout(() => setDispatchedSuccess(null), 6000);
+  };
 
   const filteredFaculty = FACULTY_DIRECTORY.filter(
     (f) =>
@@ -93,6 +119,7 @@ export const FacultyAndAdminDirectory: React.FC<FacultyAndAdminDirectoryProps> =
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 mb-4 overflow-x-auto scrollbar-none">
         {[
           { key: 'faculty', label: 'Faculty Directory', icon: Users },
+          { key: 'absence_engine', label: 'AI Substitute Dispatch', icon: Zap },
           { key: 'admin', label: 'Administrative Tasks', icon: FileCheck },
           { key: 'labs', label: 'Lab Resources & Equipment', icon: Wrench },
           { key: 'clubs', label: 'Clubs & Memberships', icon: Building }
@@ -175,6 +202,134 @@ export const FacultyAndAdminDirectory: React.FC<FacultyAndAdminDirectoryProps> =
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Faculty Absence & AI Substitute Auto-Match Engine */}
+      {activeTab === 'absence_engine' && (
+        <div className="space-y-4">
+          {dispatchedSuccess && (
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-900 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>{dispatchedSuccess}</span>
+            </div>
+          )}
+
+          <div className="p-4 rounded-2xl bg-slate-900 text-white border border-slate-800 space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 font-mono text-[10px] font-bold uppercase">
+                  Faculty Administration Portal
+                </span>
+                <h4 className="text-sm font-extrabold text-white mt-1 flex items-center gap-2">
+                  <UserX className="w-4 h-4 text-rose-400" /> Mark Unavailable & AI Auto-Match Substitute
+                </h4>
+              </div>
+
+              <span className="px-2.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-400 text-[11px] font-mono font-bold flex items-center gap-1">
+                <Zap className="w-3.5 h-3.5" /> 1-Click Dispatch Enabled
+              </span>
+            </div>
+
+            {/* Absence Form Simulator */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase mb-1">
+                  Faculty Member
+                </label>
+                <select
+                  value={absentFaculty}
+                  onChange={(e) => setAbsentFaculty(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold text-xs"
+                >
+                  <option value="usr_fac_01">Dr. V. Srinivas (HOD CSE)</option>
+                  <option value="usr_fac_02">Prof. Swathi (Assoc. Prof IT)</option>
+                  <option value="usr_fac_03">Dr. T. Ram Mohan (ECE)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase mb-1">
+                  Class / Subject Slot
+                </label>
+                <select
+                  value={absentSubject}
+                  onChange={(e) => setAbsentSubject(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold text-xs"
+                >
+                  <option value="Deep Learning & Neural Networks (CS301)">Deep Learning & Neural Networks (CS301)</option>
+                  <option value="Database Management Systems (CS204)">Database Management Systems (CS204)</option>
+                  <option value="Signal Processing & Systems (EC301)">Signal Processing & Systems (EC301)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase mb-1">
+                  Time Period Today
+                </label>
+                <input
+                  type="text"
+                  value={absentSlot}
+                  onChange={(e) => setAbsentSlot(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold text-xs"
+                />
+              </div>
+            </div>
+
+            {/* AI Agent Recommendation Cards */}
+            <div className="p-3.5 rounded-xl bg-slate-950 border border-teal-500/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-teal-400 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4" /> AI Agent Matching Engine: Top Suggested Substitutes
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">2 Free Slot Matches Found</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Match 1 */}
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between gap-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <h5 className="text-xs font-extrabold text-white">Prof. B. Veeresh</h5>
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase">
+                        98% Expertise Match
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">CSE Dept • Cloud Architecture & AI Expert</p>
+                    <p className="text-[10px] text-teal-400 font-mono mt-1">Status: Free in Slot (Visvesvaraya 304)</p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDispatchSubstitute('Prof. B. Veeresh', 'CSE Dept')}
+                    className="w-full py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Send className="w-3.5 h-3.5" /> Dispatch & Alert Class (1-Click)
+                  </button>
+                </div>
+
+                {/* Match 2 */}
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between gap-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <h5 className="text-xs font-extrabold text-white">Dr. K. Anitha</h5>
+                      <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase">
+                        91% Expertise Match
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">IT Dept • Optimization Systems</p>
+                    <p className="text-[10px] text-teal-400 font-mono mt-1">Status: Free in Slot (Ramanujan Lab 2)</p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDispatchSubstitute('Dr. K. Anitha', 'IT Dept')}
+                    className="w-full py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Send className="w-3.5 h-3.5" /> Dispatch & Alert Class (1-Click)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
