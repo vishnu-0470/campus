@@ -18,6 +18,7 @@ import { AIDoubtChatbox } from './components/AIDoubtChatbox';
 import { NoticeScannerCameraWidget } from './components/NoticeScannerCameraWidget';
 import { NextClassWidget } from './components/NextClassWidget';
 import { NotificationsDrawer } from './components/NotificationsDrawer';
+import { StudentServicesPortal } from './components/StudentServicesPortal';
 
 import {
   UserProfile,
@@ -27,7 +28,8 @@ import {
   TimeSlot,
   CampusAlertNotification,
   AccessibilityConfig,
-  PersonalCalendarEvent
+  PersonalCalendarEvent,
+  NoticeAttachment
 } from './types';
 
 import {
@@ -122,7 +124,7 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
     }
   ]);
 
-  // Load server status & health check on startup
+  // Load server status & health check on startup + Polling for live notification bell updates
   useEffect(() => {
     fetch('/api/health')
       .then((res) => res.json())
@@ -133,6 +135,12 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
 
     fetchSlots();
     fetchNotifications();
+
+    const intervalId = setInterval(() => {
+      fetchNotifications();
+    }, 4000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchSlots = async () => {
@@ -271,14 +279,20 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
     }
   };
 
-  const handlePostAnnouncement = (title: string, message: string, priority: 'low' | 'medium' | 'high' | 'urgent') => {
+  const handlePostAnnouncement = (
+    title: string,
+    message: string,
+    priority: 'low' | 'medium' | 'high' | 'urgent',
+    attachment?: NoticeAttachment
+  ) => {
     const newAlert: CampusAlertNotification = {
       id: `anc_${Date.now()}`,
       title: `📢 ${title}`,
       message,
       type: priority === 'urgent' ? 'urgent' : 'class',
       timestamp: 'Just now',
-      read: false
+      read: false,
+      attachment
     };
 
     setAlerts((prev) => [newAlert, ...prev]);
@@ -289,7 +303,8 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
       body: JSON.stringify({
         title: `📢 ${title}`,
         message,
-        type: priority === 'urgent' ? 'urgent' : 'class'
+        type: priority === 'urgent' ? 'urgent' : 'class',
+        attachment
       })
     }).catch((err) => console.log('Notice sync error:', err));
   };
@@ -525,6 +540,21 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
           <FacultyAndAdminDirectory
             accessibilityTransparency={accessibility.reducedTransparency}
             onAskAgentAboutContact={(query) => handleSendMessage(query)}
+            onPostAnnouncement={handlePostAnnouncement}
+          />
+        </motion.section>
+
+        {/* Student Services Agent: Hostel Management, Mess Schedule & Grievance Redressal */}
+        <motion.section
+          aria-label="Student Services Agent for Hostel and Grievances"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <StudentServicesPortal
+            currentUser={currentUser}
+            accessibilityTransparency={accessibility.reducedTransparency}
             onPostAnnouncement={handlePostAnnouncement}
           />
         </motion.section>

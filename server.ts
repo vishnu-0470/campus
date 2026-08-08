@@ -79,7 +79,7 @@ async function startServer() {
 
   // Trigger custom alert
   app.post('/api/notifications/trigger', (req, res) => {
-    const { title, message, type, actionUrl } = req.body;
+    const { title, message, type, actionUrl, attachment } = req.body;
     const newAlert = {
       id: `alt_${Date.now()}`,
       title: title || '⚡ CampusOS Alert',
@@ -87,7 +87,8 @@ async function startServer() {
       type: type || 'urgent',
       timestamp: 'Just now',
       read: false,
-      actionUrl
+      actionUrl,
+      attachment
     };
     alertsState.unshift(newAlert);
     res.json({ success: true, alert: newAlert });
@@ -302,6 +303,7 @@ Return strictly raw JSON.`
     const isSportsBooking = /sports|court|badminton|basketball|tennis|turf|book|slot|play/i.test(prompt);
     const isAcademic = /attendance|exam|condonation|makeup|timetable|class|subject|gpa|cgpa/i.test(prompt);
     const isPlacement = /placement|google|internship|resume|interview|tpo|company|job/i.test(prompt);
+    const isHostelGrievance = /hostel|mess|food|ragging|grievance|complaint|wifi|gatepass|outing|warden|clean|sanitation/i.test(prompt);
     const isFacultyAdmin = /who|contact|where|office|hod|dean|warden|certificate|bonafide|noc|doc/i.test(prompt);
     const isLabClub = /lab|3d|print|hardware|fablab|compute|gpu|club|ieee|gdsc|robotics/i.test(prompt);
 
@@ -494,6 +496,46 @@ Would you like me to draft an official email request to Dr. K. Srinivas on your 
       answerText = `Good news! You are **ELIGIBLE** for the upcoming **Google SDE Internship Drive** (Your CGPA is 8.2 / cutoff is 7.5).
 
 Tomorrow at 02:00 PM, the TPO Cell is hosting a mandatory workshop on System Design & Coding Prep in Seminar Hall 1. Approve below to register and add a reminder to your calendar!`;
+    } else if (isHostelGrievance) {
+      reasoning = 'Orchestrator routed request to Student Services Agent (Hostel Management & Grievance Redressal SLA Engine).';
+      steps = [
+        {
+          agentName: 'Student Services Agent',
+          action: 'Hostel & Grievance SLA Lookup',
+          thought: 'Retrieving hostel allotment, mess schedule, and grievance ticket tracking.',
+          toolUsed: 'Student Services Database',
+          status: 'completed' as const,
+          explanation: 'Hostel: Visvesvaraya Block B Room 204. Today Lunch: Veg Biryani & Paneer Curry. Curfew: 09:30 PM.'
+        },
+        {
+          agentName: 'Notification Agent',
+          action: 'Escalation Check',
+          thought: 'Checking open tickets for student.',
+          toolUsed: 'Campus Alert Engine',
+          status: 'completed' as const,
+          explanation: 'Grievance GRV-2026-104 (Wi-Fi disconnections) is currently In Progress by IT Services Agent.'
+        }
+      ];
+
+      requiresApproval = true;
+      approvalAction = {
+        id: `appr_grv_${Date.now()}`,
+        type: 'SUBMIT_GRIEVANCE' as const,
+        title: 'Submit / Track Campus Grievance Ticket',
+        description: 'Auto-route grievance to IT & Hostel Maintenance AI Agent with 24-hour SLA guarantee.',
+        details: {
+          Category: 'Hostel & IT Services',
+          TargetDepartment: 'Visvesvaraya Hostel Caretaker',
+          SLA_Target: 'Resolution within 24 hours'
+        },
+        riskLevel: 'low' as const
+      };
+
+      answerText = `Here is your **Hostel & Student Services Summary**:
+- **Hostel Room**: Visvesvaraya Block B, Room 204 (Warden: Dr. M. Sateesh)
+- **Today's Lunch Menu**: Veg Biryani, Mirchi Ka Salan, Paneer Curry, Steamed Rice
+- **Outing Gate Pass**: Curfew is 09:30 PM. You can apply for a 1-click digital QR gate pass in the Student Services Agent panel.
+- **Active Grievances**: Ticket **GRV-2026-104** (Wi-Fi issues) is currently *In Progress* with the IT Services Agent (Target resolution today).`;
     } else {
       reasoning = 'Orchestrator routed multi-domain query across Student Services, Faculty Directory, and Administrative Task Map.';
       steps = [
