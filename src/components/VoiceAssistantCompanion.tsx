@@ -65,47 +65,60 @@ export const VoiceAssistantCompanion: React.FC<VoiceAssistantCompanionProps> = (
       aria-label="Voice Companion Assistant"
     >
       <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl w-full max-w-lg p-8 shadow-2xl text-center space-y-6 relative overflow-hidden">
-        {/* Glowing Orb Backdrop */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
+        {/* Glowing Orb Backdrops */}
+        <div className="absolute -top-10 -right-10 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 p-2.5 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
           aria-label="Close voice assistant"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
-        <div className="w-16 h-16 rounded-3xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-cyan-500 to-emerald-400 text-slate-950 flex items-center justify-center mx-auto shadow-2xl shadow-cyan-500/30">
           <Bot className="w-8 h-8 animate-bounce" />
         </div>
 
         <div>
-          <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-300">
-            CampusOS Voice Companion
+          <h2 className="text-xl font-black text-white flex items-center justify-center gap-2">
+            CampusOS <span className="text-cyan-400 font-mono text-sm">Hi-Fi Voice Assistant</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Hands-Free Accessibility & Voice Navigation Engine
+            Hands-free natural speech, automated navigation & query execution
           </p>
         </div>
 
-        {/* Big Mic Control Button */}
-        <div className="py-4">
+        {/* Dynamic Equalizer Visualizer Ring */}
+        <div className="py-4 relative flex items-center justify-center">
+          {/* Waveform Equalizer Rings */}
+          <div className="flex items-center justify-center gap-1.5 absolute">
+            {[30, 60, 90, 45, 75, 100, 50, 80, 40].map((val, idx) => (
+              <div
+                key={idx}
+                style={{ height: isListening || isSpeaking ? `${val}%` : '20%' }}
+                className="w-1.5 bg-gradient-to-t from-cyan-500 to-emerald-400 rounded-full transition-all duration-200"
+              />
+            ))}
+          </div>
+
           <button
             onClick={startListening}
-            className={`w-28 h-28 rounded-full flex items-center justify-center mx-auto transition-all transform active:scale-95 shadow-xl ${
+            className={`w-28 h-28 rounded-full flex items-center justify-center relative z-10 transition-all transform active:scale-95 shadow-2xl ${
               isListening
-                ? 'bg-red-500 text-white shadow-red-500/50 animate-ping'
-                : 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-emerald-500/30 hover:scale-105'
+                ? 'bg-rose-500 text-white shadow-rose-500/50 animate-pulse border-4 border-rose-300'
+                : 'bg-gradient-to-tr from-cyan-500 via-emerald-400 to-teal-500 text-slate-950 shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-105 border-2 border-white/40'
             }`}
             aria-label="Tap to speak to CampusOS"
           >
-            {isListening ? <MicOff className="w-12 h-12" /> : <Mic className="w-12 h-12" />}
+            {isListening ? <MicOff className="w-10 h-10" /> : <Mic className="w-10 h-10" />}
           </button>
-          <p className="text-xs font-semibold text-slate-300 mt-4">
-            {isListening ? 'Listening to your request...' : 'Tap Mic to Speak'}
-          </p>
         </div>
+
+        <p className="text-xs font-bold text-slate-300 mt-2 font-mono">
+          {isListening ? '⚡ Listening to your voice input...' : 'Tap Glowing Mic to Speak'}
+        </p>
 
         {/* Live Transcript Display */}
         {transcript && (

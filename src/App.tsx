@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Header
-} from './components/Header';
+import { Header } from './components/Header';
+import { PremiumAudioHeader } from './components/PremiumAudioHeader';
 import { ClassNotificationBanner } from './components/ClassNotificationBanner';
 import { SportsBookingWidget } from './components/SportsBookingWidget';
 import { AgentOrchestrator } from './components/AgentOrchestrator';
@@ -331,6 +330,15 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
+        {/* Premium Audio Studio & Soundscape Header */}
+        <section aria-label="CampusOS Hi-Fi Audio Studio Bar">
+          <PremiumAudioHeader
+            activeVoiceMode={showVoiceCompanion}
+            onToggleVoiceMode={() => setShowVoiceCompanion(!showVoiceCompanion)}
+            accessibilityTransparency={accessibility.reducedTransparency}
+          />
+        </section>
+
         {/* Agent Conversational & Execution Surface */}
         <section aria-label="Multi-Agent Conversational AI Studio">
           <AgentOrchestrator
