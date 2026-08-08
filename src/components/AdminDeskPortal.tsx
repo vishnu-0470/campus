@@ -92,6 +92,11 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
 
   const handlePublishCircular = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAdminOrFaculty) {
+      alert("Access Restricted: Only Faculty and Admin accounts can dispatch official circulars. Please switch to Dr. V. Srinivas (Faculty) or TPO Officer (Admin) profile using the header profile switcher.");
+      return;
+    }
+
     if (!annTitle.trim() || !annMessage.trim()) return;
 
     const fullNotice = `[Ref: ${annRefNo}] [Type: ${docCategory}] Target: ${annTarget}\n\n${annMessage}`;
@@ -106,7 +111,7 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
     };
 
     onPostAnnouncement(`OFFICIAL ${docCategory.toUpperCase()}: ${annTitle}`, fullNotice, annPriority, finalAttachment);
-    setAnnSuccessMsg(`Official ${docCategory} "${annTitle}" (${annRefNo}) with attachment published! Visible on top notification bar and circular board.`);
+    setAnnSuccessMsg(`Official ${docCategory} "${annTitle}" (${annRefNo}) with attachment published! Immediately broadcasted to top notification banner and notification drawer.`);
     setAnnTitle('');
     setAnnMessage('');
     setAttachedFile(null);
@@ -116,6 +121,11 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
 
   const handleSaveAttendance = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAdminOrFaculty) {
+      alert("Access Restricted: Only Faculty and Admin accounts can update official attendance registers. Please switch to Dr. V. Srinivas (Faculty) or TPO Officer (Admin) profile using the header profile switcher.");
+      return;
+    }
+
     const parsed = parseFloat(newAttendanceValue);
     if (isNaN(parsed) || parsed < 0 || parsed > 100) return;
 
@@ -128,7 +138,7 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
       parsed < 75 ? 'urgent' : 'high'
     );
 
-    setAttSuccessMsg(`Attendance for ${studentLabel} updated to ${parsed}% in official ERP register and broadcasted!`);
+    setAttSuccessMsg(`Attendance for ${studentLabel} updated to ${parsed}% in official ERP register and broadcasted to top notification bar!`);
     setTimeout(() => setAttSuccessMsg(''), 5000);
   };
 
@@ -374,9 +384,22 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg transition-all"
+                disabled={!isAdminOrFaculty}
+                className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg transition-all ${
+                  isAdminOrFaculty
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white cursor-pointer'
+                    : 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed'
+                }`}
               >
-                <Send className="w-4 h-4" /> Publish {docCategory} & Broadcast to All
+                {isAdminOrFaculty ? (
+                  <>
+                    <Send className="w-4 h-4" /> Publish {docCategory} & Broadcast to Top Bar
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4 text-amber-500" /> Faculty / Admin Role Required to Dispatch
+                  </>
+                )}
               </button>
             </div>
           </form>
@@ -457,13 +480,26 @@ export const AdminDeskPortal: React.FC<AdminDeskPortalProps> = ({
               />
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-200/60 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between">
+            <div className="p-3 rounded-xl bg-slate-200/60 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
               <span>Official ERP Lock: Updates reflect immediately in student read-only view and top notification bar.</span>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-all"
+                disabled={!isAdminOrFaculty}
+                className={`px-4 py-2 rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 ${
+                  isAdminOrFaculty
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
+                    : 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'
+                }`}
               >
-                Post Official Attendance Register
+                {isAdminOrFaculty ? (
+                  <>
+                    <Send className="w-3.5 h-3.5" /> Post Register & Broadcast to Top Bar
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5 text-amber-500" /> Faculty Role Required
+                  </>
+                )}
               </button>
             </div>
           </form>
