@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Trophy,
   Calendar,
@@ -8,7 +9,10 @@ import {
   User,
   RefreshCw,
   Sparkles,
-  ShieldAlert
+  ShieldAlert,
+  Users,
+  X,
+  QrCode
 } from 'lucide-react';
 import { SportsCourt, TimeSlot, CourtType } from '../types';
 
@@ -31,6 +35,16 @@ export const SportsBookingWidget: React.FC<SportsBookingWidgetProps> = ({
   const [selectedCourtId, setSelectedCourtId] = useState<string>('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('16:00');
   const [loading, setLoading] = useState(false);
+
+  const [activePass, setActivePass] = useState<{
+    courtName: string;
+    slotTime: string;
+    bookingRef: string;
+    userName: string;
+  } | null>(null);
+
+  const [waitlistSuccess, setWaitlistSuccess] = useState<string | null>(null);
+
   const [bookingMessage, setBookingMessage] = useState<{
     text: string;
     isError: boolean;
@@ -47,7 +61,7 @@ export const SportsBookingWidget: React.FC<SportsBookingWidgetProps> = ({
     }
   }, [selectedType, courts]);
 
-  const handleBook = async (courtId: string, slotTime: string) => {
+  const handleBook = async (courtId: string, slotTime: string, courtName: string) => {
     setLoading(true);
     setBookingMessage(null);
     try {
@@ -66,7 +80,12 @@ export const SportsBookingWidget: React.FC<SportsBookingWidgetProps> = ({
           text: data.message,
           isError: false
         });
-        // Reload slots
+        setActivePass({
+          courtName: courtName,
+          slotTime: `${slotTime} - ${parseInt(slotTime) + 1}:00`,
+          bookingRef: `VCE-SPORT-${Math.floor(100000 + Math.random() * 900000)}`,
+          userName: 'Rahul Sharma (1602-23-733-042)'
+        });
         await onBookSlot(courtId, slotTime);
       } else if (res.status === 409) {
         setBookingMessage({
@@ -88,6 +107,11 @@ export const SportsBookingWidget: React.FC<SportsBookingWidgetProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleJoinWaitlist = (courtName: string, slotTime: string) => {
+    setWaitlistSuccess(`You are #1 on the First-Come-First-Serve waitlist for ${courtName} at ${slotTime}!`);
+    setTimeout(() => setWaitlistSuccess(null), 5000);
   };
 
   return (
@@ -129,22 +153,83 @@ export const SportsBookingWidget: React.FC<SportsBookingWidgetProps> = ({
         ))}
       </div>
 
+      {/* Waitlist Banner */}
+      {waitlistSuccess && (
+        <div className="p-3 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center justify-between">
+          <span>{waitlistSuccess}</span>
+        </div>
+      )}
+
+      {/* Generated QR Pass Banner */}
+      {activePass && (
+        <div className="p-4 mb-4 rounded-2xl bg-slate-900 border-2 border-emerald-500 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl animate-in fade-in">
+          <div className="space-y-1 text-center sm:text-left">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-black uppercase">
+              Confirmed Digital Entry Pass
+            </span>
+            <h4 className="text-sm font-extrabold text-white mt-1">
+              {activePass.courtName} • {activePass.slotTime}
+            </h4>
+            <p className="text-xs text-slate-300">
+              Pass Holder: <strong>{activePass.userName}</strong>
+            </p>
+            <p className="text-[10px] font-mono text-emerald-400">
+              Ref ID: {activePass.bookingRef}
+            </p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-white shrink-0 text-center">
+            <QRCodeSVG value={JSON.stringify(activePass)} size={80} />
+            <span className="text-[9px] font-mono font-bold text-slate-900 block mt-1">Scan at Court Gate</span>
+          </div>
+
+          <button
+            onClick={() => setActivePass(null)}
+            className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white self-start"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Courts & Slot Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredCourts.map((court) => {
           const courtSlots = slots.filter((s) => s.courtId === court.id);
+          const maxCap = court.maxCapacity || 4;
+          const bookedCount = courtSlots.filter(s => s.status === 'booked' || s.status === 'reserved').length;
+          const capPercent = Math.min(100, Math.round((bookedCount / maxCap) * 100));
+
           return (
             <div
               key={court.id}
-              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50"
+              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 space-y-3"
             >
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  {court.name}
-                </h4>
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  {court.location}
-                </span>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                    {court.name}
+                  </h4>
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    {court.location}
+                  </span>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1 justify-end">
+                    <Users className="w-3 h-3 text-indigo-500" />
+                    Capacity: {bookedCount} / {maxCap}
+                  </span>
+                  {/* Capacity Meter Progress Bar */}
+                  <div className="w-24 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden mt-1">
+                    <div
+                      className={`h-full transition-all ${
+                        capPercent >= 100 ? 'bg-rose-500' : capPercent >= 50 ? 'bg-amber-500' : 'bg-emerald-500'
+                      }`}
+                      style={{ width: `${capPercent}%` }}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Time Slots */}
@@ -187,20 +272,19 @@ export const SportsBookingWidget: React.FC<SportsBookingWidgetProps> = ({
                         <div className="mt-2 flex items-center gap-1">
                           {isBooked ? (
                             <button
-                              onClick={() => handleBook(court.id, s.startTime)}
+                              onClick={() => handleJoinWaitlist(court.name, s.startTime)}
                               className="w-full py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] transition-colors flex items-center justify-center gap-1"
-                              title="Test Conflict Resolution Engine"
                             >
-                              <ShieldAlert className="w-3 h-3" />
-                              Test Conflict
+                              <Users className="w-3 h-3" />
+                              Join Waitlist
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleBook(court.id, s.startTime)}
+                              onClick={() => handleBook(court.id, s.startTime, court.name)}
                               disabled={loading}
                               className="w-full py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition-colors"
                             >
-                              Book Slot
+                              Book & Get QR
                             </button>
                           )}
                         </div>

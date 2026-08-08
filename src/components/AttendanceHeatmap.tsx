@@ -21,7 +21,10 @@ import {
   Sparkles,
   TrendingUp,
   ShieldCheck,
-  BookOpen
+  BookOpen,
+  Calculator,
+  X,
+  Sliders
 } from 'lucide-react';
 import { ATTENDANCE_WEEKLY_DATA, SUBJECT_ATTENDANCE_DATA } from '../data/campusData';
 import { UserProfile } from '../types';
@@ -38,10 +41,28 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
   onAskAgentAboutAttendance
 }) => {
   const [activeTab, setActiveTab] = useState<'weekly' | 'subjects'>('weekly');
+  const [showCalcModal, setShowCalcModal] = useState(false);
+  const [simulatedFutureAttended, setSimulatedFutureAttended] = useState(8);
+  const [simulatedFutureTotal, setSimulatedFutureTotal] = useState(10);
+
   const panelClass = accessibilityTransparency ? 'solid-panel' : 'glass-panel';
 
   const overallPercentage = currentUser.attendancePercentage || 73.5;
   const isBelowThreshold = overallPercentage < 75.0;
+
+  // Real math constants
+  const baseAttended = 147;
+  const baseTotal = 200; // 147/200 = 73.5%
+  const targetThreshold = 0.75;
+
+  // Math calculations
+  const classesNeededFor75 = Math.ceil((targetThreshold * baseTotal - baseAttended) / (1 - targetThreshold));
+  const currentSafeBunks = Math.max(0, Math.floor((baseAttended - targetThreshold * baseTotal) / targetThreshold));
+
+  // Simulated math
+  const simTotal = baseTotal + simulatedFutureTotal;
+  const simAttended = baseAttended + simulatedFutureAttended;
+  const simPercentage = parseFloat(((simAttended / simTotal) * 100).toFixed(1));
 
   // Recharts custom tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -151,20 +172,93 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
           </div>
         </div>
 
-        {onAskAgentAboutAttendance && (
-          <button
-            onClick={() =>
-              onAskAgentAboutAttendance(
-                'How many classes do I need to attend to reach 75% attendance for condonation waiver?'
-              )
-            }
-            className="px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold shrink-0 flex items-center gap-1.5 hover:opacity-90 transition-opacity"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
-            Calculate Condonation Math
-          </button>
-        )}
+        <button
+          onClick={() => setShowCalcModal(!showCalcModal)}
+          className="px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold shrink-0 flex items-center gap-1.5 hover:opacity-90 transition-opacity"
+        >
+          <Calculator className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
+          Calculate Condonation Math
+        </button>
       </div>
+
+      {/* Condonation Math Interactive Simulator Modal */}
+      {showCalcModal && (
+        <div className="p-5 rounded-2xl bg-slate-900 text-white border-2 border-emerald-500/40 space-y-4 shadow-2xl animate-in fade-in duration-200">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-emerald-400" />
+              <h4 className="text-sm font-extrabold text-white">
+                Vasavi College Condonation & Safe-Bunk Calculator
+              </h4>
+            </div>
+            <button
+              onClick={() => setShowCalcModal(false)}
+              className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+              <span className="text-slate-400 block text-[10px]">Current Classes</span>
+              <span className="text-base font-black text-white mt-0.5 block">
+                {baseAttended} / {baseTotal}
+              </span>
+              <span className="text-[10px] text-amber-400 font-bold block mt-1">{overallPercentage}% (Risk)</span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+              <span className="text-slate-400 block text-[10px]">Classes Needed for 75%</span>
+              <span className="text-base font-black text-emerald-400 mt-0.5 block">
+                +{classesNeededFor75} Classes
+              </span>
+              <span className="text-[10px] text-slate-400 block mt-1">100% Attendance Sprint</span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center">
+              <span className="text-slate-400 block text-[10px]">Safe Bunks Available</span>
+              <span className="text-base font-black text-rose-400 mt-0.5 block">
+                {currentSafeBunks} Classes
+              </span>
+              <span className="text-[10px] text-slate-400 block mt-1">Below 75% Threshold</span>
+            </div>
+          </div>
+
+          {/* Simulator Controls */}
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <Sliders className="w-4 h-4 text-emerald-400" />
+                Simulate Future Class Attendance:
+              </span>
+              <span className={`text-xs font-mono font-black ${simPercentage >= 75 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                Simulated Attendance: {simPercentage}%
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-[11px] text-slate-400">
+                <span>Attend {simulatedFutureAttended} of next {simulatedFutureTotal} conducted classes</span>
+                <span>+{simulatedFutureAttended} / +{simulatedFutureTotal}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max={simulatedFutureTotal}
+                value={simulatedFutureAttended}
+                onChange={(e) => setSimulatedFutureAttended(parseInt(e.target.value))}
+                className="w-full accent-emerald-500 cursor-pointer"
+              />
+            </div>
+
+            <p className="text-[11px] text-slate-400 italic">
+              Result: If you attend {simulatedFutureAttended} out of the next {simulatedFutureTotal} classes, your total becomes {simAttended}/{simTotal} ({simPercentage}%).
+              {simPercentage >= 75 ? ' ✅ You reach the 75% exam hall ticket eligibility threshold!' : ' ⚠️ Still requires additional attendance or medical condonation form.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main Chart or Subject Grid Content */}
       {activeTab === 'weekly' ? (

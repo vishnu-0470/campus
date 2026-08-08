@@ -152,6 +152,14 @@ export interface LabResource {
   accessProcedure: string;
 }
 
+export interface NoticeAttachment {
+  name: string;
+  url?: string;
+  fileType: 'pdf' | 'image' | 'document';
+  docCategory: 'Notice' | 'Timetable' | 'Syllabus' | 'Announcement';
+  fileSize?: string;
+}
+
 export interface CampusAlertNotification {
   id: string;
   title: string;
@@ -160,6 +168,8 @@ export interface CampusAlertNotification {
   timestamp: string;
   read: boolean;
   actionUrl?: string;
+  targetSection?: 'circulars' | 'attendance' | 'sports' | 'placement' | 'calendar';
+  attachment?: NoticeAttachment;
 }
 
 export type ColorblindMode = 'normal' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'highcontrast';
@@ -207,6 +217,22 @@ export interface SubjectAttendance {
   requiredClassesFor75: number;
 }
 
+export interface InterviewRoadmapStep {
+  phase: string;
+  focus: string;
+  tasks: string[];
+}
+
+export interface InterviewRoadmap {
+  companyId: string;
+  companyName: string;
+  role: string;
+  technicalTopics: string[];
+  aptitudeCodingPlan: string[];
+  resumeFixes: string[];
+  timeline: InterviewRoadmapStep[];
+}
+
 export interface PlacementCompany {
   id: string;
   companyName: string;
@@ -222,6 +248,7 @@ export interface PlacementCompany {
   description: string;
   userEligible?: boolean;
   eligibilityReason?: string;
+  roadmap?: InterviewRoadmap;
 }
 
 export interface AdminAnnouncement {
@@ -231,7 +258,9 @@ export interface AdminAnnouncement {
   postedBy: string;
   targetAudience: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
+  docCategory?: 'Notice' | 'Timetable' | 'Syllabus' | 'Announcement';
   timestamp: string;
+  attachment?: NoticeAttachment;
 }
 
 export interface AcademicDoubt {
@@ -249,10 +278,12 @@ export interface PersonalCalendarEvent {
   date: string;
   time?: string;
   location?: string;
-  category: 'exam' | 'submission' | 'fee' | 'event' | 'circular';
+  category: 'exam' | 'submission' | 'fee' | 'event' | 'circular' | 'class';
   requirements?: string;
   sourceNoticeTitle?: string;
   addedAt: string;
+  isManual?: boolean;
+  reminderTriggered?: boolean;
 }
 
 export interface ExtractedNoticeData {

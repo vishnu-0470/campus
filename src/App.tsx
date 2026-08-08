@@ -16,6 +16,8 @@ import { AdminDeskPortal } from './components/AdminDeskPortal';
 import { PlacementGuidanceWidget } from './components/PlacementGuidanceWidget';
 import { AIDoubtChatbox } from './components/AIDoubtChatbox';
 import { NoticeScannerCameraWidget } from './components/NoticeScannerCameraWidget';
+import { NextClassWidget } from './components/NextClassWidget';
+import { NotificationsDrawer } from './components/NotificationsDrawer';
 
 import {
   UserProfile,
@@ -357,6 +359,20 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
+        {/* Smarter Next Class Countdown Widget */}
+        <motion.section
+          aria-label="Smarter Next Class Countdown"
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <NextClassWidget
+            currentUser={currentUser}
+            accessibilityTransparency={accessibility.reducedTransparency}
+          />
+        </motion.section>
+
         {/* Premium Audio Studio & Soundscape Header */}
         <motion.section
           aria-label="CampusOS Hi-Fi Audio Studio Bar"
@@ -548,6 +564,17 @@ I coordinate 9 specialized agents across academics, real-time class reminders, s
         <SecretsModal
           onClose={() => setShowSecretsModal(false)}
           hasGeminiKey={hasGeminiKey}
+        />
+      )}
+
+      {showNotificationsDrawer && (
+        <NotificationsDrawer
+          alerts={alerts}
+          onClose={() => setShowNotificationsDrawer(false)}
+          onMarkAllAsRead={() => {
+            setAlerts((prev) => prev.map((a) => ({ ...a, read: true })));
+          }}
+          onClearAll={() => setAlerts([])}
         />
       )}
 
