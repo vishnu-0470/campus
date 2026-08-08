@@ -67,16 +67,35 @@ export default function App() {
     }
   ]);
 
-  // Accessibility State
-  const [accessibility, setAccessibility] = useState<AccessibilityConfig>({
-    theme: 'light',
-    colorblindMode: 'normal',
-    reducedMotion: false,
-    reducedTransparency: false,
-    highContrastText: false,
-    screenReaderEnabled: false,
-    speechRate: 1.0
+  // Accessibility State with localStorage persistence
+  const [accessibility, setAccessibility] = useState<AccessibilityConfig>(() => {
+    try {
+      const saved = localStorage.getItem('campusos_accessibility_config');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Error loading accessibility settings from localStorage:', e);
+    }
+    return {
+      theme: 'dark',
+      colorblindMode: 'normal',
+      reducedMotion: false,
+      reducedTransparency: false,
+      highContrastText: false,
+      screenReaderEnabled: false,
+      speechRate: 1.0
+    };
   });
+
+  // Effect to save accessibility settings whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('campusos_accessibility_config', JSON.stringify(accessibility));
+    } catch (e) {
+      console.error('Error saving accessibility settings to localStorage:', e);
+    }
+  }, [accessibility]);
 
   // Modal Visibility State
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
