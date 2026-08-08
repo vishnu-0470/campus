@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-black tracking-tight text-white uppercase">
-                Synapse<span className="text-[#2dd4bf]"> AI</span>
+                Synapse
               </h1>
             </div>
             <p className="text-[11px] text-[#9ca3af] hidden sm:block">
